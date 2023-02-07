@@ -46,6 +46,58 @@ const GameBoardFactory = () => {
     }
     placeShips(carrier);
 
+    // prettier-ignore-start
+    function remainingCoordinates(
+        xSource,
+        ySource,
+        xIndex,
+        yIndex,
+        xModify,
+        yModify,
+        length
+    ) {
+        let newCoordinates = [];
+        for (let i = 1; i <= length; i++) {
+            newCoordinates.push([
+                xSource[xIndex + (xModify ? i : 0)],
+                ySource[yIndex + (yModify ? i : 0)],
+            ]);
+        }
+        return newCoordinates;
+    }
+
+    function extendShip(index, xSource, ySource, xIndex, yIndex, length) {
+        //extends ship based on length
+        let rightExtend = false;
+        let leftExtend = false;
+        let randomExtend = 0;
+
+        // check if ship is valid to extend by positive based on game board
+        if (index - length < 0 && index + length <= 9) {
+            rightExtend = true;
+            randomExtend = 1;
+        }
+        // check if ship is valid to extend by negative based on game board
+        else if (index + length >= 9 && index - length > 0) {
+            leftExtend = true;
+            randomExtend = 0;
+        }
+
+        if (rightExtend == true && leftExtend == true)
+            randomExtend = Math.floor(Math.random() * 2);
+
+        if (randomExtend == 1) {
+            return remainingCoordinates(xSource, ySource, xIndex, yIndex, true, false, length); //prettier-ignore
+        } else {
+            return remainingCoordinates(xSource, ySource, xIndex, yIndex, false, true, length); //prettier-ignore
+        }
+    }
+
+    function checkValidTiles(index, occuppied) {
+        // checks if the tiles that the ship will take is valid
+        let isValid = true;
+    }
+
     function placeShips(ship) {
         // generates ship coordinates
         while (true) {
@@ -55,105 +107,31 @@ const GameBoardFactory = () => {
                 xCoordinates[xRandom],
                 yCoordinates[yRandom],
             ];
-            xRandom = 9;
+            xRandom = 0;
             yRandom = 0;
-            generatedCoordinates = ["J", "1"];
+            generatedCoordinates = ["A", "1"];
             if (occuppiedCoordinates.length == 0) {
                 ship.extendCoordinates(generatedCoordinates);
                 occuppiedCoordinates.push(generatedCoordinates);
             } else {
             }
+            let remainingLength = ship.lengths - 1;
+            let remLengthCoords = [];
             if (ship.orientation == true) {
                 // check if valid horinztally
-                let remainingLength = ship.lengths - 1;
-                // is ship valid when extending to the right when extending to the left is not valid
-                if (xRandom - ship.lengths < 0 && xRandom + ship.lengths <= 9) {
-                    // extend to the right
-                    for (let i = 1; i <= remainingLength; i++) {
-                        console.log("this");
-                        ship.extendCoordinates([
-                            xCoordinates[xRandom + i],
-                            yCoordinates[yRandom],
-                        ]);
-                    }
-                } else if (
-                    xRandom + ship.lengths >= 9 &&
-                    xRandom - ship.lengths > 0
-                ) {
-                    // extend to the left
-                    console.log("this");
-                    for (let i = 1; i <= remainingLength; i++) {
-                        ship.extendCoordinates([
-                            xCoordinates[xRandom - i],
-                            yCoordinates[yRandom],
-                        ]);
-                    }
-                } else {
-                    console.log("this");
-                    let randomDirection = Math.random() * 1;
+                remLengthCoords = extendShip(xRandom, xCoordinates, yCoordinates, xRandom, yRandom, remainingLength); // prettier-ignore
 
-                    if (randomDirection == 0) {
-                        // extend left
-                        for (let i = 1; i <= remainingLength; i++) {
-                            ship.extendCoordinates([
-                                xCoordinates[xRandom - i],
-                                yCoordinates[yRandom],
-                            ]);
-                        }
-                    } else {
-                        // extend right
-                        for (let i = 1; i <= remainingLength; i++) {
-                            ship.extendCoordinates([
-                                xCoordinates[xRandom + i],
-                                yCoordinates[yRandom],
-                            ]);
-                        }
-                    }
-                }
+                remLengthCoords.forEach((item) => {
+                    ship.extendCoordinates(item);
+                    occuppiedCoordinates.push(item);
+                });
             } else if (ship.orientation == false) {
-                // check of valid vertically
-                let remainingLength = ship.lengths - 1;
-                // is ship valid when extending to the right when extending to the left is not valid
-                if (yRandom - ship.lengths < 0 && yRandom + ship.lengths <= 9) {
-                    // extend to the right
-                    for (let i = 1; i <= remainingLength; i++) {
-                        ship.extendCoordinates([
-                            xCoordinates[xRandom],
-                            yCoordinates[yRandom + i],
-                        ]);
-                    }
-                } else if (
-                    yRandom + ship.lengths >= 0 &&
-                    yRandom - ship.lengths > 9
-                ) {
-                    // extend to the left
-                    for (let i = 1; i <= remainingLength; i++) {
-                        ship.extendCoordinates([
-                            xCoordinates[xRandom],
-                            yCoordinates[yRandom - i],
-                        ]);
-                    }
-                } else {
-                    let randomDirection = Math.random() * 1;
+                remLengthCoords = extendShip(xRandom, xCoordinates, yCoordinates, xRandom, yRandom, remainingLength); // prettier-ignore
 
-                    if (randomDirection == 0) {
-                        // extend left
-                        for (let i = 1; i <= remainingLength; i++) {
-                            ship.extendCoordinates([
-                                xCoordinates[xRandom],
-                                yCoordinates[yRandom - i],
-                            ]);
-                        }
-                    } else {
-                        // extend right
-                        for (let i = 1; i <= remainingLength; i++) {
-                            ship.extendCoordinates([
-                                xCoordinates[xRandom],
-                                yCoordinates[yRandom + i],
-                            ]);
-                        }
-                    }
-                }
+                remLengthCoords.forEach((item) => {
+                    ship.extendCoordinates(item);
+                    occuppiedCoordinates.push(item);
+                });
             }
             break;
         }
@@ -168,7 +146,7 @@ const GameBoardFactory = () => {
         // counts the remainingShips
     }
 
-    return { placeShips, carrier };
+    return { placeShips, carrier, occuppiedCoordinates };
 };
 
 const PlayerFactory = () => {
@@ -179,5 +157,6 @@ const playerOne = GameBoardFactory();
 
 console.log(playerOne.carrier.lengths);
 console.log(playerOne.carrier.coordinates);
+console.log(playerOne.occuppiedCoordinates);
 
 module.exports = playerOne;
