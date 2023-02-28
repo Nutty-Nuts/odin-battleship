@@ -93,9 +93,13 @@ const GameBoardFactory = () => {
         }
     }
 
-    function checkValidTiles(index, occuppied) {
+    function checkValidTiles(index, occuppied, ship) {
         // checks if the tiles that the ship will take is valid
         let isValid = true;
+    }
+
+    function randomShipCoordinates() {
+        // creates a random and valid ship coordinate
     }
 
     function placeShips(ship) {
