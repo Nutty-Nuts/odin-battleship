@@ -1,13 +1,18 @@
-const shipFactory = (size, coordinates, orientation, hits, sink) => {
-    const hit = () => {
-        hits++;
-    };
-    const isSunk = () => {
-        if (hits == size) sink = true;
-    };
+const shipFactory = function (size, coordinates, orientation, hits, sink) {
+    function hit(coords) {
+        this.hits.push(coords);
+    }
+    function isSunk() {
+        if (hits.length == size) {
+            this.sink = true;
+        }
+    }
     const setCoordinates = (inputCoordinates) => {
-        coordinates = inputCoordinates;
+        this.coordinates = inputCoordinates;
     };
+    function sayHi() {
+        console.log("hi");
+    }
     return {
         size,
         coordinates,
@@ -17,6 +22,7 @@ const shipFactory = (size, coordinates, orientation, hits, sink) => {
         hit,
         isSunk,
         setCoordinates,
+        sayHi,
     };
 };
 

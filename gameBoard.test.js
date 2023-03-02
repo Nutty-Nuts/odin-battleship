@@ -28,3 +28,30 @@ test("carrier coords should be [1, 1] to [5, 1]", () => {
         [5, 1],
     ]);
 });
+test("battleship coords should be [1, 2] to [1, 5]", () => {
+    expect(player.battleship.coordinates).toEqual([
+        [1, 2],
+        [1, 3],
+        [1, 4],
+        [1, 5],
+    ]);
+});
+
+player.recieveAttack([2, 1]);
+player.recieveAttack([1, 1]);
+player.recieveAttack([3, 1]);
+player.recieveAttack([4, 1]);
+player.recieveAttack([5, 1]);
+test("carrier receives attacks at [1, 1], [3, 1], [4, 1], [5, 1] and hits should contain [[2,1]]", () => {
+    expect(player.carrier.hits).toEqual([
+        [2, 1],
+        [1, 1],
+        [3, 1],
+        [4, 1],
+        [5, 1],
+    ]);
+});
+
+test("carrier has took 5 hits and should be sunk", () => {
+    expect(player.carrier.sink).toBe(true);
+});
