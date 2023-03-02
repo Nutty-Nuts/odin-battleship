@@ -7,6 +7,9 @@ const gameBoardFactory = () => {
     let occuppiedCoordinates = [];
     let occuppyingShip = {};
 
+    let missedAttacks = [];
+    let successfulAttacks = [];
+
     let carrier = shipFactory(5, [], true, [], false);
     let battleship = shipFactory(4, [], false, [], false);
     let cruiser = shipFactory(3, [], true, [], false);
@@ -120,6 +123,7 @@ const gameBoardFactory = () => {
         let targetShip = "";
 
         if (arrayContains(occuppiedCoordinates, coords)) {
+            successfulAttacks.push(coords);
             for (const [key, value] of Object.entries(occuppyingShip)) {
                 for (const item of value) {
                     if (item.toString() == coords.toString()) {
@@ -127,6 +131,8 @@ const gameBoardFactory = () => {
                     }
                 }
             }
+        } else {
+            missedAttacks.push(coords);
         }
         switch (targetShip) {
             case "carrier":
