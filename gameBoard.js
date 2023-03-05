@@ -1,160 +1,65 @@
 const shipFactory = require("./ship");
 
-const gameBoardFactory = () => {
-    let xCoordinates = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    let yCoordinates = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    let occuppiedCoordinates = [];
-    let occuppyingShip = {};
-
-    let missedAttacks = [];
-    let successfulAttacks = [];
-
-    let carrier = shipFactory(5, [], true, [], false);
-    let battleship = shipFactory(4, [], false, [], false);
-    let cruiser = shipFactory(3, [], true, [], false);
-    let submarine = shipFactory(3, [], null, [], false);
-    let destroyer = shipFactory(2, [], null, [], false);
-
-    setShipCoordinates(carrier, [[1, 1]], "carrier");
-    setShipCoordinates(battleship, [[1, 2]], "battleship");
-
-    function checkCoordinates(coordinates) {
-        for (let coords of coordinates) {
-            if (occuppiedCoordinates.includes(coords)) return false;
+const gameBoard = (ship, shipCoordinates, occupiedCoordinates) => {
+    function createShip(option) {
+        switch (option) {
+            // create carrier
+            case 0:
+                this.ship.push(shipFactory(5, [], null, [], false));
+                break;
+            // create battleship
+            case 1:
+                this.ship.push(shipFactory(4, [], null, [], false));
+                break;
+            // create cruiser
+            case 2:
+                this.ship.push(shipFactory(3, [], null, [], false));
+                break;
+            // create destroyer
+            case 3:
+                this.ship.push(shipFactory(3, [], null, [], false));
+                break;
+            // create submarine
+            case 4:
+                this.ship.push(shipFactory(2, [], null, [], false));
+                break;
         }
+    }
 
+    // verify if coordinates is valid
+    function verifyCoordinates(coordinates) {
+        for (let coords of coordinates) {
+            if (this.occupiedCoordinates.includes(coords)) return false;
+        }
         return true;
     }
 
-    function randomCoordinates() {
-        let xRandom = Math.round(Math.random() * 10);
-        let yRandom = Math.round(Math.random() * 10);
-
-        let generatedCoordinates = [
-            [xCoordinates[xRandom], yCoordinates[yRandom]],
-        ];
-
-        return generatedCoordinates;
-    }
-
-    function extendFromSource(ship) {
-        let positiveExtend = false;
-        let negativeExtend = false;
-
+    function extendCoordinatesFromSource(ship) {
         let sourceCoordinates = ship.coordinates[0];
-        let generatedCoordinates = [sourceCoordinates];
-
+        let extendedCoordinates = [sourceCoordinates];
+        // ship is horizontal
         if (ship.orientation) {
-            if (sourceCoordinates[0] + ship.size <= 9) positiveExtend = true;
-            if (sourceCoordinates[0] - ship.size >= 0) negativeExtend = true;
-        } else {
-            if (sourceCoordinates[1] + ship.size <= 9) positiveExtend = true;
-            if (sourceCoordinates[1] - ship.size >= 0) negativeExtend = true;
-        }
-
-        if (ship.orientation) {
-            if (positiveExtend && !negativeExtend) {
-                for (let i = 1; i < ship.size; i++)
-                    generatedCoordinates.push([sourceCoordinates[0] + i, sourceCoordinates[1]]); //prettier-ignore
-            } else if (negativeExtend && !positiveExtend) {
-                for (let i = 1; i < ship.size; i++)
-                    generatedCoordinates.push([sourceCoordinates[0] - i, sourceCoordinates[1]]); //prettier-ignore
-            } else if (positiveExtend && negativeExtend) {
-                let randomExtend = Math.floor(Math.random() * 2);
-
-                if (randomExtend == 0) {
-                    for (let i = 1; i < ship.size; i++)
-                        generatedCoordinates.push([sourceCoordinates[0] + i, sourceCoordinates[1]]); //prettier-ignore
-                } else {
-                    for (let i = 1; i < ship.size; i++)
-                        generatedCoordinates.push([sourceCoordinates[0] - i, sourceCoordinates[1]]); //prettier-ignore
-                }
+            for (let i = 0; i < ship.size; i++) {
+                extendedCoordinates.push(
+                    sourceCoordinates[0] + i,
+                    sourceCoordinates[1]
+                );
             }
-        } else {
-            if (positiveExtend && !negativeExtend) {
-                for (let i = 1; i < ship.size; i++)
-                    generatedCoordinates.push([sourceCoordinates[0], sourceCoordinates[1] + i]); //prettier-ignore
-            } else if (negativeExtend && !positiveExtend) {
-                for (let i = 1; i < ship.size; i++)
-                    generatedCoordinates.push([sourceCoordinates[0], sourceCoordinates[1] - i]); //prettier-ignore
-            } else if (positiveExtend && negativeExtend) {
-                let randomExtend = Math.floor(Math.random() * 2);
-
-                if (randomExtend == 0) {
-                    for (let i = 1; i < ship.size; i++)
-                        generatedCoordinates.push([sourceCoordinates[0], sourceCoordinates[1] + i]); //prettier-ignore
-                } else {
-                    for (let i = 1; i < ship.size; i++)
-                        generatedCoordinates.push([sourceCoordinates[0], sourceCoordinates[1] - i]); //prettier-ignore
-                }
-            }
+            return extendedCoordinates;
         }
-
-        return generatedCoordinates;
+        // ship is vertical
+        else {
+            for (let i = 0; i < ship.size; i++) {
+                extendedCoordinates.push(
+                    sourceCoordinates[0],
+                    sourceCoordinates[1] + i
+                );
+            }
+            return extendedCoordinates;
+        }
     }
 
-    function setShipCoordinates(ship, coords, name) {
-        if (!checkCoordinates(coords)) return;
-        ship.coordinates = coords;
-
-        let extendedCooordinates = extendFromSource(ship);
-
-        if (!checkCoordinates(extendedCooordinates)) return;
-        ship.coordinates = extendedCooordinates;
-
-        for (let coords of extendedCooordinates)
-            occuppiedCoordinates.push(coords);
-        occuppyingShip[name] = extendedCooordinates;
-        ship.sayHi();
-    }
-    return { carrier, battleship, cruiser, submarine, destroyer, recieveAttack }; // prettier-ignore
-
-    function arrayContains(source, target) {
-        for (const array of source) {
-            if (array.toString() == target.toString()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function recieveAttack(coords) {
-        let targetShip = "";
-
-        if (arrayContains(occuppiedCoordinates, coords)) {
-            successfulAttacks.push(coords);
-            for (const [key, value] of Object.entries(occuppyingShip)) {
-                for (const item of value) {
-                    if (item.toString() == coords.toString()) {
-                        targetShip = key;
-                    }
-                }
-            }
-        } else {
-            missedAttacks.push(coords);
-        }
-        switch (targetShip) {
-            case "carrier":
-                carrier.hit(coords);
-                carrier.isSunk();
-                break;
-        }
-        console.log(
-            carrier.hits,
-            carrier.sink,
-            carrier.hits.length,
-            carrier.size
-        );
+    function setShipCoordinates(option) {
+        this.ship.push(createShip(option));
     }
 };
-
-let test = gameBoardFactory();
-
-test.recieveAttack([1, 1]);
-test.recieveAttack([2, 1]);
-test.recieveAttack([3, 1]);
-test.recieveAttack([4, 1]);
-test.recieveAttack([5, 1]);
-
-module.exports = gameBoardFactory;

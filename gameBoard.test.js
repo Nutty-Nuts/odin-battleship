@@ -55,3 +55,7 @@ test("carrier receives attacks at [1, 1], [3, 1], [4, 1], [5, 1] and hits should
 test("carrier has took 5 hits and should be sunk", () => {
     expect(player.carrier.sink).toBe(true);
 });
+
+test("1 ship has sunk, therefore the sink count is 1", () => {
+    expect(player.countSunk()).toBe(1);
+});

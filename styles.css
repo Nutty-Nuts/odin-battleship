@@ -1,0 +1,21 @@
+.cell {
+    background-color: grey;
+
+    height: 2.5rem;
+    width: 2.5rem;
+    margin: 0.125rem;
+    border-radius: 0.25rem;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.row:nth-child(odd) .cell:nth-child(even) {
+    background-color: darkgrey;
+}
+
+.row:nth-child(even) .cell:nth-child(odd) {
+    background-color: darkgrey;
+}
