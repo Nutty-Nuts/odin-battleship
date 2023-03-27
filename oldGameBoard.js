@@ -117,7 +117,7 @@ const gameBoardFactory = (ships, occuppied, takenCoords) => {
         return false;
     }
 
-    function recieveAttack(coords) {
+    function receiveAttack(coords) {
         let targetShip = "";
 
         if (arrayContains(occuppiedCoordinates, coords)) {
@@ -157,15 +157,15 @@ const gameBoardFactory = (ships, occuppied, takenCoords) => {
         }
         return sinkCount;
     }
-    return { carrier, battleship, cruiser, submarine, destroyer, recieveAttack, setShipCoordinates, countSunk }; // prettier-ignore
+    return { carrier, battleship, cruiser, submarine, destroyer, receiveAttack, setShipCoordinates, countSunk }; // prettier-ignore
 };
 
 let test = gameBoardFactory();
 
-test.recieveAttack([1, 1]);
-test.recieveAttack([2, 1]);
-test.recieveAttack([3, 1]);
-test.recieveAttack([4, 1]);
-test.recieveAttack([5, 1]);
+test.receiveAttack([1, 1]);
+test.receiveAttack([2, 1]);
+test.receiveAttack([3, 1]);
+test.receiveAttack([4, 1]);
+test.receiveAttack([5, 1]);
 
 module.exports = gameBoardFactory;
